@@ -82,8 +82,8 @@ int main(){
     fclose(frecord);
     #if DEBUG // check all order in the list
     ptr = list;
-    puts("----------------");
     for(int i = 0; i < count; i++){
+        if(i == 0) puts("----------------");
         printf(
         "num: %d\n"
         "meal code: %s\n",ptr->number,ptr->meal);
