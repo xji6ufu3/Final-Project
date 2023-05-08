@@ -9,27 +9,40 @@ typedef struct list_t{
     struct list_t *prior, *next; // doubly linked list
     char meal[]; // store meal codes ranged from 'a' to 'z' to string
 } list_t; // list_t store the order information
+enum state_t{NOTHING,CONTINUE,BREAK};
+enum state_t check_meal_code(char str[]);
+double count_price(char str[]);
+char *meal_name[LEN] = {"salads","hamberger","soup","tea","ice cream"};
+double price[LEN] = {1.0,2.0,3.0,4.0,5.0};
+void free_list(list_t *ptr);
 int main(){
     int count, price = 0; // count store the sum of order
-    char str[LEN+1], record[36]; 
+    char str[LEN+1], record[36];
+    enum state_t state;
     list_t *list = NULL, *ptr, *prior; // the beginning of the list
     FILE *frecord = fopen("recording.txt","a+");
     FILE *fnum = fopen("number.txt","w+");
     fscanf(fnum,"%d",&count);
+    printf("count: %d.\n",count);
     while(1){
         printf("input the meal code: ");
         fgets(str,LEN,stdin);
         str[strlen(str)-1] = '\0';
-        // if the code is 0, break the while loop
-        if(!strcmp(str,"0")) break;
+        state = check_meal_code(str);
+        if(state == BREAK) break;
+        else if(state == CONTINUE) continue;
         // sort the meal code and count the total price
         // store the meal codes to the list
-        if(count == 0){
+        if(count == 0){ // if it's first order
             list = malloc(sizeof(list_t)+strlen(str)+1);
             ptr = list;
             list->prior = list->next = NULL;
         }
-        else{
+        else{ // not first order
+            if(list == NULL){
+                printf("the number in number.txt is not 0.\n");
+                break;
+            }
             ptr->next = malloc(sizeof(list_t)+strlen(str)+1);
             prior = ptr;
             ptr = ptr->next;
@@ -38,12 +51,12 @@ int main(){
         }
         ptr->number = ++count;
         strcpy(ptr->meal,str);
-        ptr->price = price;
+        ptr->price = count_price(str);
     }
     fprintf(fnum,"%d",count);
     fclose(fnum);
     fclose(frecord);
-    #if DEBUG
+    #if DEBUG // check all order in the list
     ptr = list;
     puts("----------------");
     for(int i = 0; i < count; i++){
@@ -55,4 +68,52 @@ int main(){
         ptr = ptr->next;
     }
     #endif
+    free_list(list);
+}
+enum state_t check_meal_code(char str[]){
+    int wrong = 0, len = strlen(str);
+    // wrong: whether str contains space or wrong alphabat
+    if(!strcmp(str,"0")){ // if the code is 0, break the while loop
+        printf("stop input\n");
+        return BREAK; // break while loop
+    }
+    for(int i = 0; i < len; i++){
+        if(str[i] == ' '){
+            printf("wrong: meal codes can't contain any space.\n");
+            wrong = 1;
+            break;
+        }
+    }
+    for(int i = 0; i < len; i++){
+        if('a' > str[i] || str[i] > 'z'){
+            printf("wrong: meal codes only can contain alphabat from a to z.\n");
+            wrong = 1;
+            break;
+        }
+    }
+    if(wrong) return CONTINUE; // if wrong alphabat or space, return
+    for(int i = 0; i < len; i++){
+        if(meal_name[str[i]-'a'] == NULL){
+            printf("wrong: meal code at %d doesn't exist.\n",i+1);
+            return CONTINUE;
+        }
+    }
+    return NOTHING;
+}
+double count_price(char str[]){
+    double sum = 0;
+    int len = strlen(str);
+    for(int i = 0; i < len; i++){
+        sum += (price[(str[i]-'a')]);
+    }
+    // printf("sum: %d.\n",sum);
+    return sum;
+}
+void free_list(list_t *ptr){
+    list_t *priptr;
+    while(ptr != NULL){
+        priptr = ptr;
+        ptr = ptr->next;
+        free(priptr);
+    }
 }
