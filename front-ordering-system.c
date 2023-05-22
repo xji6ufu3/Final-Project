@@ -12,8 +12,8 @@ typedef struct list_t{
 struct menu_t{
     double price;
     int time;
-    char name[20];
-    char ingredients[40];
+    char *name;
+    char *ingredients;
 }menu[LEN];
 int foodnum;
 enum state_t{NOTHING,CONTINUE,BREAK};
@@ -24,6 +24,7 @@ double count_price(char str[]);
 // char *meal_name[LEN] = {"salads","hamberger","soup","tea","ice cream"};
 // char *meal_name[LEN];
 void free_list(list_t *ptr);
+void free_menu(struct menu_t menu[]);
 int cmp(const void *a, const void *b){
     return (*(char*)a - *(char*)b);
 }
@@ -36,10 +37,14 @@ void initialMenu(FILE *fmenu){
             printf("wrong order in the menu.\n");
             exit(0);
         }
-        strcpy(menu[i].name,strtok(NULL," \n"));
+        p = strtok(NULL," \n");
+        menu[i].name = malloc(strlen(p));
+        strcpy(menu[i].name,p);
         menu[i].price = atof(strtok(NULL," \n"));
         menu[i].time = atoi(strtok(NULL," \n"));
-        strcpy(menu[i].ingredients,strtok(NULL," \n"));
+        p = strtok(NULL," \n");
+        menu[i].ingredients = malloc(strlen(p));
+        strcpy(menu[i].ingredients,p);
         i++;
     }
     foodnum = i;
@@ -49,7 +54,7 @@ void printMenu(){
         printf("-----\n"
         "code: %c\n"
         "name: %s\n"
-        "price: %lf\n"
+        "price: %.1lf\n"
         "time: %d\n"
         "ingredients: %s\n",i+'a',menu[i].name,menu[i].price,
         menu[i].time,menu[i].ingredients);
@@ -62,7 +67,7 @@ int main(){
     list_t *list = NULL, *ptr, *prior; // the beginning of the list
     FILE *frecord = fopen("recording.txt","a+");
     FILE *fnum = fopen("number.txt","r");
-    FILE *fmenu = fopen("menu-test.txt","r");
+    FILE *fmenu = fopen("menu.txt","r");
     initialMenu(fmenu);
     #if DEBUG
         printMenu();
@@ -139,6 +144,13 @@ int main(){
     }
     #endif
     free_list(list);
+    free_menu(menu);
+}
+void free_menu(struct menu_t menu[]){
+    for(int i = 0; i < foodnum; i++){
+        free(menu[i].name);
+        free(menu[i].ingredients);
+    }
 }
 enum state_t check_meal_code(char str[]){
     int wrong = 0, len = strlen(str);
