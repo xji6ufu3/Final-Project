@@ -9,14 +9,51 @@ typedef struct list_t{
     struct list_t *prior, *next; // doubly linked list
     char meal[]; // store meal codes ranged from 'a' to 'z' to string
 } list_t; // list_t store the order information
+struct menu_t{
+    double price;
+    int time;
+    char name[20];
+    char ingredients[40];
+}menu[LEN];
+int foodnum;
 enum state_t{NOTHING,CONTINUE,BREAK};
 enum state_t check_meal_code(char str[]);
 double price[LEN] = {1,2,3,4,5};
+// double price[LEN];
 double count_price(char str[]);
-char *meal_name[LEN] = {"salads","hamberger","soup","tea","ice cream"};
+// char *meal_name[LEN] = {"salads","hamberger","soup","tea","ice cream"};
+// char *meal_name[LEN];
 void free_list(list_t *ptr);
 int cmp(const void *a, const void *b){
     return (*(char*)a - *(char*)b);
+}
+void initialMenu(FILE *fmenu){
+    int i = 0;
+    char str[100];
+    char *p;
+    while(fgets(str,100,fmenu) != NULL){
+        if(atoi(strtok(str," \n")) != i+1){
+            printf("wrong order in the menu.\n");
+            exit(0);
+        }
+        strcpy(menu[i].name,strtok(NULL," \n"));
+        menu[i].price = atof(strtok(NULL," \n"));
+        menu[i].time = atoi(strtok(NULL," \n"));
+        strcpy(menu[i].ingredients,strtok(NULL," \n"));
+        i++;
+    }
+    foodnum = i;
+}
+void printMenu(){
+    for(int i = 0; i < foodnum; i++){
+        printf("-----\n"
+        "code: %c\n"
+        "name: %s\n"
+        "price: %lf\n"
+        "time: %d\n"
+        "ingredients: %s\n",i+'a',menu[i].name,menu[i].price,
+        menu[i].time,menu[i].ingredients);
+    }
 }
 int main(){
     int count; // count store the sum of order
@@ -25,6 +62,12 @@ int main(){
     list_t *list = NULL, *ptr, *prior; // the beginning of the list
     FILE *frecord = fopen("recording.txt","a+");
     FILE *fnum = fopen("number.txt","r");
+    FILE *fmenu = fopen("menu-test.txt","r");
+    initialMenu(fmenu);
+    #if DEBUG
+        printMenu();
+    #endif
+    fclose(fmenu);
     fscanf(fnum,"%d",&count);
     while(count){
         printf("the number in number.txt is not 0.\n"
@@ -87,8 +130,8 @@ int main(){
         printf(
         "num: %d\n"
         "meal code: %s\n",ptr->number,ptr->meal);
-        printf("meal name: %s",meal_name[ptr->meal[0]-'a']);
-        for(int j = 1; j < strlen(ptr->meal); j++) printf(" %s",meal_name[ptr->meal[j]-'a']);
+        printf("meal name: %s",menu[ptr->meal[0]-'a'].name);
+        for(int j = 1; j < strlen(ptr->meal); j++) printf(" %s",menu[ptr->meal[j]-'a'].name);
         printf(
         "\nprice: %.2lf\n"
         "----------------\n",ptr->price);
@@ -120,7 +163,7 @@ enum state_t check_meal_code(char str[]){
     }
     if(wrong) return CONTINUE; // if wrong alphabat or space, return
     for(int i = 0; i < len; i++){
-        if(meal_name[str[i]-'a'] == NULL){
+        if(!strlen(menu[str[i]-'a'].name)){
             printf("wrong: meal code at %d doesn't exist.\n",i+1);
             return CONTINUE;
         }
