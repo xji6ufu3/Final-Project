@@ -3,6 +3,7 @@
 #include <string.h>
 #define LEN 26
 #define DEBUG 1
+#define RECORD_NAME "recording.txt"
 typedef struct list_t{
     int number; // the order of order
     double price;
@@ -24,7 +25,7 @@ double count_price(char str[]);
 // char *meal_name[LEN] = {"salads","hamberger","soup","tea","ice cream"};
 // char *meal_name[LEN];
 void free_list(list_t *ptr);
-void free_menu(struct menu_t menu[]);
+void free_menu();
 int cmp(const void *a, const void *b){
     return (*(char*)a - *(char*)b);
 }
@@ -34,17 +35,22 @@ void initialMenu(FILE *fmenu){
     char *p;
     while(fgets(str,100,fmenu) != NULL){
         if(atoi(strtok(str," \n")) != i+1){
-            printf("wrong order in the menu.\n");
+            printf("wrong order at line %d in the menu.\n",i+1);
             exit(0);
         }
         p = strtok(NULL," \n");
-        menu[i].name = malloc(strlen(p));
+        menu[i].name = malloc(strlen(p)+1);
         strcpy(menu[i].name,p);
         menu[i].price = atof(strtok(NULL," \n"));
         menu[i].time = atoi(strtok(NULL," \n"));
         p = strtok(NULL," \n");
-        menu[i].ingredients = malloc(strlen(p));
+        menu[i].ingredients = malloc(strlen(p)+1);
         strcpy(menu[i].ingredients,p);
+        p = strtok(NULL," \n");
+        if(p != NULL){
+            printf("too many parameter at line %d in menu.\n",i+1);
+            exit(0);
+        }
         i++;
     }
     foodnum = i;
@@ -62,10 +68,11 @@ void printMenu(){
 }
 int main(){
     int count; // count store the sum of order
+    int first;
     char str[LEN+1], record[36];
     enum state_t state;
     list_t *list = NULL, *ptr, *prior; // the beginning of the list
-    FILE *frecord = fopen("recording.txt","a+");
+    FILE *frecord = fopen(RECORD_NAME,"a+");
     FILE *fnum = fopen("number.txt","r");
     FILE *fmenu = fopen("menu.txt","r");
     initialMenu(fmenu);
@@ -77,11 +84,13 @@ int main(){
     while(count){
         printf("the number in number.txt is not 0.\n"
         "scan command below to continue.\n"
+        "0: just continue.\n"
         "1: initialize the number.txt\n"
         "2: exit the program.\n"
         "command: ");
         scanf("%d",&state);
-        if(state == CONTINUE){
+        if(state == NOTHING) break;
+        else if(state == CONTINUE){
             fclose(fnum);
             fnum = fopen("number.txt","w");
             fprintf(fnum,"%d",0);
@@ -122,6 +131,13 @@ int main(){
         ptr->number = ++count;
         strcpy(ptr->meal,str);
         ptr->price = count_price(str);
+        fprintf(frecord,
+        "number: %d\n"
+        "meal: %s",ptr->number,menu[ptr->meal[0]-'a'].name);
+        for(int j = 1; j < strlen(ptr->meal); j++) fprintf(frecord," %s",menu[ptr->meal[j]-'a'].name);
+        fprintf(frecord,
+        "\nprice: %.2lf\n"
+        "----------\n",ptr->price);
     }
     fclose(fnum);
     fnum = fopen("number.txt","w");
@@ -144,9 +160,9 @@ int main(){
     }
     #endif
     free_list(list);
-    free_menu(menu);
+    free_menu();
 }
-void free_menu(struct menu_t menu[]){
+void free_menu(){
     for(int i = 0; i < foodnum; i++){
         free(menu[i].name);
         free(menu[i].ingredients);
@@ -175,7 +191,7 @@ enum state_t check_meal_code(char str[]){
     }
     if(wrong) return CONTINUE; // if wrong alphabat or space, return
     for(int i = 0; i < len; i++){
-        if(!strlen(menu[str[i]-'a'].name)){
+        if(str[i]-'a' >= foodnum){
             printf("wrong: meal code at %d doesn't exist.\n",i+1);
             return CONTINUE;
         }
