@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <string.h>
 #define LEN 26
-#define DEBUG 1
+#define DEBUG 0
 #define RECORD_NAME "recording.txt"
+#define RECORD_NAME_TEMP "recording_temp.txt"
 typedef struct list_t{
     int number; // the order of order
     double price;
@@ -20,58 +21,20 @@ int foodnum;
 enum state_t{NOTHING,CONTINUE,BREAK};
 enum state_t check_meal_code(char str[]);
 double price[LEN] = {1,2,3,4,5};
-// double price[LEN];
 double count_price(char str[]);
-// char *meal_name[LEN] = {"salads","hamberger","soup","tea","ice cream"};
-// char *meal_name[LEN];
 void free_list(list_t *ptr);
 void free_menu();
-int cmp(const void *a, const void *b){
-    return (*(char*)a - *(char*)b);
-}
-void initialMenu(FILE *fmenu){
-    int i = 0;
-    char str[100];
-    char *p;
-    while(fgets(str,100,fmenu) != NULL){
-        if(atoi(strtok(str," \n")) != i+1){
-            printf("wrong order at line %d in the menu.\n",i+1);
-            exit(0);
-        }
-        p = strtok(NULL," \n");
-        menu[i].name = malloc(strlen(p)+1);
-        strcpy(menu[i].name,p);
-        menu[i].price = atof(strtok(NULL," \n"));
-        menu[i].time = atoi(strtok(NULL," \n"));
-        p = strtok(NULL," \n");
-        menu[i].ingredients = malloc(strlen(p)+1);
-        strcpy(menu[i].ingredients,p);
-        p = strtok(NULL," \n");
-        if(p != NULL){
-            printf("too many parameter at line %d in menu.\n",i+1);
-            exit(0);
-        }
-        i++;
-    }
-    foodnum = i;
-}
-void printMenu(){
-    for(int i = 0; i < foodnum; i++){
-        printf("-----\n"
-        "code: %c\n"
-        "name: %s\n"
-        "price: %.1lf\n"
-        "time: %d\n"
-        "ingredients: %s\n",i+'a',menu[i].name,menu[i].price,
-        menu[i].time,menu[i].ingredients);
-    }
-}
+int cmp(const void *a, const void *b);
+void initialMenu(FILE *fmenu);
+void printMenu();
+void del_record(int number);
+int delete(list_t **list, int number);
+int isnumber(char str[]);
 int main(){
     int count; // count store the sum of order
-    int first;
-    char str[LEN+1], record[36];
+    char str[LEN+1], record[36], command[10];
     enum state_t state;
-    list_t *list = NULL, *ptr, *prior; // the beginning of the list
+    list_t *list = NULL, *ptr, *prior;
     FILE *frecord = fopen(RECORD_NAME,"a+");
     FILE *fnum = fopen("number.txt","r");
     FILE *fmenu = fopen("menu.txt","r");
@@ -102,42 +65,78 @@ int main(){
     }
     setbuf(stdin,NULL); // clear input buffer 
     while(1){
-        printf("input the meal code: ");
-        fgets(str,LEN,stdin);
-        str[strlen(str)-1] = '\0';
-        if(!strlen(str)) {
-            printf("\nempty meal codes!\n"
-            "please try again.\n\n");
-            continue;
+        printf("input the command: ");
+        fgets(command,LEN,stdin);
+        if(!strcmp(command,"help\n")){
+            printf("\nhelp: list all the command that can be used.\n"
+            "order: into ordering-food system\n"
+            "delete: input the number of order you want to delete.\n"
+            "exit: exit the program.\n\n");
+        } else if(!strcmp(command,"order\n")){
+            while(1){
+                printf("input the meal code: ");
+                fgets(str,LEN,stdin);
+                str[strlen(str)-1] = '\0';
+                if(!strlen(str)) {
+                    printf("\nempty meal codes!\n"
+                    "please try again.\n\n");
+                    continue;
+                }
+                state = check_meal_code(str);
+                if(state == BREAK) break;
+                else if(state == CONTINUE) continue;
+                // sort the meal code and count the total price
+                // store the meal codes to the list
+                qsort(str,strlen(str),sizeof(char),cmp);
+                if(list == NULL){ // if it's first order
+                    list = malloc(sizeof(list_t)+strlen(str)+1);
+                    list->prior = list->next = NULL;
+                } else{
+                    list->next = malloc(sizeof(list_t)+strlen(str)+1);
+                    prior = list;
+                    list = list->next;
+                    list->prior = prior;
+                    list->next = NULL;
+                }
+                list->number = ++count;
+                strcpy(list->meal,str);
+                list->price = count_price(str);
+                fprintf(frecord,
+                "number: %d\n"
+                "meal: %s",list->number,menu[list->meal[0]-'a'].name);
+                for(int j = 1; j < strlen(list->meal); j++) fprintf(frecord," %s",menu[list->meal[j]-'a'].name);
+                fprintf(frecord,
+                "\nprice: %.2lf\n"
+                "----------\n",list->price);
+            }
+        } else if(!strcmp(command,"delete\n")){
+            int number;
+            while(1){
+                printf("delete the number of order: ");
+                fgets(str,LEN,stdin);
+                str[strlen(str)-1] = '\0';
+                if(!isnumber(str)){
+                    printf("\nwrong, it is not a digit.\n\n");
+                    continue;
+                } else{
+                    number = atoi(str);
+                    printf("detele number %d order\n",number);
+                    if(delete(&list,number)) break;
+                }
+            }
+            printf("success to delete.\n");
+            fclose(frecord);
+            del_record(number);
+            frecord = fopen(RECORD_NAME,"a+");
+        } else if(!strcmp(command,"exit\n")){
+            printf("close the program.\n");
+            break;
+        } else{
+            printf("\n----------\n"
+            "wrong command.\n"
+            "please try again.\n"
+            "----------\n\n");
         }
-        state = check_meal_code(str);
-        if(state == BREAK) break;
-        else if(state == CONTINUE) continue;
-        // sort the meal code and count the total price
-        // store the meal codes to the list
-        qsort(str,strlen(str),sizeof(char),cmp);
-        if(count == 0){ // if it's first order
-            list = malloc(sizeof(list_t)+strlen(str)+1);
-            ptr = list;
-            list->prior = list->next = NULL;
-        }
-        else{ // not first order
-            ptr->next = malloc(sizeof(list_t)+strlen(str)+1);
-            prior = ptr;
-            ptr = ptr->next;
-            ptr->prior = prior;
-            ptr->next = NULL;
-        }
-        ptr->number = ++count;
-        strcpy(ptr->meal,str);
-        ptr->price = count_price(str);
-        fprintf(frecord,
-        "number: %d\n"
-        "meal: %s",ptr->number,menu[ptr->meal[0]-'a'].name);
-        for(int j = 1; j < strlen(ptr->meal); j++) fprintf(frecord," %s",menu[ptr->meal[j]-'a'].name);
-        fprintf(frecord,
-        "\nprice: %.2lf\n"
-        "----------\n",ptr->price);
     }
     fclose(fnum);
     fnum = fopen("number.txt","w");
@@ -145,18 +144,20 @@ int main(){
     fclose(fnum);
     fclose(frecord);
     #if DEBUG // check all order in the list
-    ptr = list;
-    for(int i = 0; i < count; i++){
-        if(i == 0) puts("----------------");
-        printf(
-        "num: %d\n"
-        "meal code: %s\n",ptr->number,ptr->meal);
-        printf("meal name: %s",menu[ptr->meal[0]-'a'].name);
-        for(int j = 1; j < strlen(ptr->meal); j++) printf(" %s",menu[ptr->meal[j]-'a'].name);
-        printf(
-        "\nprice: %.2lf\n"
-        "----------------\n",ptr->price);
-        ptr = ptr->next;
+    if(list != NULL){
+        puts("----------------");
+        ptr = list;
+        while(ptr->prior != NULL) ptr = ptr->prior;
+        for(; ptr != NULL; ptr = ptr->next){
+            printf(
+            "num: %d\n"
+            "meal code: %s\n",ptr->number,ptr->meal);
+            printf("meal name: %s",menu[ptr->meal[0]-'a'].name);
+            for(int j = 1; j < strlen(ptr->meal); j++) printf(" %s",menu[ptr->meal[j]-'a'].name);
+            printf(
+            "\nprice: %.2lf\n"
+            "----------------\n",ptr->price);
+        }
     }
     #endif
     free_list(list);
@@ -200,10 +201,10 @@ enum state_t check_meal_code(char str[]){
 }
 double count_price(char str[]){
     double sum = 0;
-    int len = strlen(str), j;
-    for(int i = 0; i < len; i++){
+    int j;
+    for(int i = 0; i < strlen(str); i++){
         j = str[i] - 'a';
-        sum += price[j];
+        sum += menu[j].price;
     }
     // printf("sum: %d.\n",sum);
     return sum;
@@ -215,4 +216,94 @@ void free_list(list_t *ptr){
         ptr = ptr->next;
         free(priptr);
     }
+}
+int cmp(const void *a, const void *b){
+    return (*(char*)a - *(char*)b);
+}
+void initialMenu(FILE *fmenu){
+    int i = 0;
+    char str[100];
+    char *p;
+    while(fgets(str,100,fmenu) != NULL){
+        if(atoi(strtok(str," \n")) != i+1){
+            printf("wrong order at line %d in the menu.\n",i+1);
+            exit(0);
+        }
+        p = strtok(NULL," \n");
+        menu[i].name = malloc(strlen(p)+1);
+        strcpy(menu[i].name,p);
+        menu[i].price = atof(strtok(NULL," \n"));
+        menu[i].time = atoi(strtok(NULL," \n"));
+        p = strtok(NULL," \n");
+        menu[i].ingredients = malloc(strlen(p)+1);
+        strcpy(menu[i].ingredients,p);
+        p = strtok(NULL," \n");
+        if(p != NULL){
+            printf("too many parameter at line %d in menu.\n",i+1);
+            exit(0);
+        }
+        i++;
+    }
+    foodnum = i;
+}
+void printMenu(){
+    for(int i = 0; i < foodnum; i++){
+        printf("-----\n"
+        "code: %c\n"
+        "name: %s\n"
+        "price: %.1lf\n"
+        "time: %d\n"
+        "ingredients: %s\n",i+'a',menu[i].name,menu[i].price,
+        menu[i].time,menu[i].ingredients);
+    }
+}
+int delete(list_t **list, int number){
+    list_t *priptr, *nextptr, *ptr = *list;
+    while(ptr != NULL){
+        if(ptr->number == number){
+            if(ptr->prior == NULL && ptr->next == NULL){
+                *list = NULL;
+            } else if(ptr->prior == NULL){
+                ptr->next->prior = NULL;
+            } else if(ptr->next == NULL){
+                ptr->prior->next = NULL;
+            } else{
+                ptr->prior->next = ptr->next;
+                ptr->next->prior = ptr->prior;
+            }
+            free(ptr);
+            return 1;
+        }
+        ptr = ptr->prior;
+    }
+    printf("wrong, can't found %d order.\n",number);
+    return 0;
+}
+void del_record(int number){
+    char target[20], str[200];
+    sprintf(target,"number: %d\n",number);
+    FILE *fin = fopen(RECORD_NAME,"r");
+    FILE *fout = fopen(RECORD_NAME_TEMP,"w");
+    if(fin == NULL || fout == NULL){
+        printf("fail to open the file at del_record().\n");
+        return;
+    }
+    while(fgets(str,199,fin) != NULL){
+        if(strncmp(str,target,20)) fprintf(fout,"%s",str);
+        else break;
+    }
+    for(int i = 0; i < 3; i++) fgets(str,199,fin);
+    while(fgets(str,199,fin) != NULL){
+        fprintf(fout,"%s",str);
+    }
+    fclose(fin);
+    fclose(fout);
+    remove(RECORD_NAME);
+    rename(RECORD_NAME_TEMP,RECORD_NAME);
+}
+int isnumber(char str[]){
+    for(int i = 0; i < strlen(str); i++)
+        if(!('0' <= str[i] && str[i] <= '9'))
+            return 0;
+    return 1;
 }
