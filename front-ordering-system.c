@@ -17,7 +17,7 @@ struct menu_t{
     char *name;
     char *ingredients;
 }menu[LEN];
-int foodnum;
+int foodnum; // the number of food in the menu
 enum state_t{NOTHING,CONTINUE,BREAK};
 enum state_t check_meal_code(char str[]);
 double price[LEN] = {1,2,3,4,5};
