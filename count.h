@@ -1,3 +1,6 @@
+#ifndef COUNT
+#define COUNT
+
 #define LEN 26
 extern double price[LEN];
 double count_price(char str[]);
@@ -11,3 +14,5 @@ extern struct menu_t{
     char *name;
     char *ingredients;
 } menu[LEN];
+
+#endif

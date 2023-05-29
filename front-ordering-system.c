@@ -2,22 +2,23 @@
 #include <stdlib.h>
 #include <string.h>
 #include "count.h"
+#include "FileIO.h"
 #define LEN 26
 #define DEBUG 0
-#define RECORD_NAME "recording.txt"
-#define RECORD_NAME_TEMP "recording_temp.txt"
-typedef struct list_t{
-    int number; // the order of order
-    double price;
-    struct list_t *prior, *next; // doubly linked list
-    char meal[]; // store meal codes ranged from 'a' to 'z' to string
-} list_t; // list_t store the order information
+// #define RECORD_NAME "recording.txt"
+// #define RECORD_NAME_TEMP "recording_temp.txt"
+// typedef struct list_t{
+//     int number; // the order of order
+//     double price;
+//     struct list_t *prior, *next; // doubly linked list
+//     char meal[]; // store meal codes ranged from 'a' to 'z' to string
+// } list_t; // list_t store the order information
 extern int foodnum; // the number of food in the menu
 enum state_t{NOTHING,CONTINUE,BREAK};
 enum state_t check_meal_code(char str[]);
-void free_list(list_t *ptr);
+// void free_list(list_t *ptr);
 int cmp(const void *a, const void *b);
-void del_record(int number);
+// void del_record(int number);
 int delete(list_t **list, int number);
 int isnumber(char str[]);
 int main(){
@@ -183,14 +184,14 @@ enum state_t check_meal_code(char str[]){
     }
     return NOTHING;
 }
-void free_list(list_t *ptr){
-    list_t *priptr;
-    while(ptr != NULL){
-        priptr = ptr;
-        ptr = ptr->next;
-        free(priptr);
-    }
-}
+// void free_list(list_t *ptr){
+//     list_t *priptr;
+//     while(ptr != NULL){
+//         priptr = ptr;
+//         ptr = ptr->next;
+//         free(priptr);
+//     }
+// }
 int cmp(const void *a, const void *b){
     return (*(char*)a - *(char*)b);
 }
