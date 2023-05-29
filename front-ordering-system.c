@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "count.h"
 #define LEN 26
 #define DEBUG 0
 #define RECORD_NAME "recording.txt"
@@ -11,22 +12,11 @@ typedef struct list_t{
     struct list_t *prior, *next; // doubly linked list
     char meal[]; // store meal codes ranged from 'a' to 'z' to string
 } list_t; // list_t store the order information
-struct menu_t{
-    double price;
-    int time;
-    char *name;
-    char *ingredients;
-}menu[LEN];
-int foodnum; // the number of food in the menu
+extern int foodnum; // the number of food in the menu
 enum state_t{NOTHING,CONTINUE,BREAK};
 enum state_t check_meal_code(char str[]);
-double price[LEN] = {1,2,3,4,5};
-double count_price(char str[]);
 void free_list(list_t *ptr);
-void free_menu();
 int cmp(const void *a, const void *b);
-void initialMenu(FILE *fmenu);
-void printMenu();
 void del_record(int number);
 int delete(list_t **list, int number);
 int isnumber(char str[]);
@@ -163,12 +153,6 @@ int main(){
     free_list(list);
     free_menu();
 }
-void free_menu(){
-    for(int i = 0; i < foodnum; i++){
-        free(menu[i].name);
-        free(menu[i].ingredients);
-    }
-}
 enum state_t check_meal_code(char str[]){
     int wrong = 0, len = strlen(str);
     // wrong: whether str contains space or wrong alphabat
@@ -199,16 +183,6 @@ enum state_t check_meal_code(char str[]){
     }
     return NOTHING;
 }
-double count_price(char str[]){
-    double sum = 0;
-    int j;
-    for(int i = 0; i < strlen(str); i++){
-        j = str[i] - 'a';
-        sum += menu[j].price;
-    }
-    // printf("sum: %d.\n",sum);
-    return sum;
-}
 void free_list(list_t *ptr){
     list_t *priptr;
     while(ptr != NULL){
@@ -219,43 +193,6 @@ void free_list(list_t *ptr){
 }
 int cmp(const void *a, const void *b){
     return (*(char*)a - *(char*)b);
-}
-void initialMenu(FILE *fmenu){
-    int i = 0;
-    char str[100];
-    char *p;
-    while(fgets(str,100,fmenu) != NULL){
-        if(atoi(strtok(str," \n")) != i+1){
-            printf("wrong order at line %d in the menu.\n",i+1);
-            exit(0);
-        }
-        p = strtok(NULL," \n");
-        menu[i].name = malloc(strlen(p)+1);
-        strcpy(menu[i].name,p);
-        menu[i].price = atof(strtok(NULL," \n"));
-        menu[i].time = atoi(strtok(NULL," \n"));
-        p = strtok(NULL," \n");
-        menu[i].ingredients = malloc(strlen(p)+1);
-        strcpy(menu[i].ingredients,p);
-        p = strtok(NULL," \n");
-        if(p != NULL){
-            printf("too many parameter at line %d in menu.\n",i+1);
-            exit(0);
-        }
-        i++;
-    }
-    foodnum = i;
-}
-void printMenu(){
-    for(int i = 0; i < foodnum; i++){
-        printf("-----\n"
-        "code: %c\n"
-        "name: %s\n"
-        "price: %.1lf\n"
-        "time: %d\n"
-        "ingredients: %s\n",i+'a',menu[i].name,menu[i].price,
-        menu[i].time,menu[i].ingredients);
-    }
 }
 int delete(list_t **list, int number){
     list_t *priptr, *nextptr, *ptr = *list;
