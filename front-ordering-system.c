@@ -23,24 +23,47 @@ int main(){
     #endif
     fclose(fmenu);
     fscanf(fnum,"%d",&count);
-    while(count){
+    if(count){
         printf("the number in number.txt is not 0.\n"
+            "scan command below to continue.\n"
+            "0: just continue.\n"
+            "1: initialize the number.txt\n"
+            "2: exit the program.\n");
+        while(1){
+            printf("command: ");
+            scanf("%1d",&state);
+            if(state == NOTHING) break;
+            else if(state == CONTINUE){
+                fclose(fnum);
+                fnum = fopen("number.txt","w");
+                fprintf(fnum,"%d",0);
+                count = 0;
+                break;
+            }
+            else if(state == BREAK) return 0;
+            else printf("\nyour input is not 1 or 2.\n"
+            "please try again.\n\n");
+        }
+    }
+    if(fgetc(frecord) != EOF){
+        printf("the recording.txt is not empty.\n"
         "scan command below to continue.\n"
         "0: just continue.\n"
-        "1: initialize the number.txt\n"
-        "2: exit the program.\n"
-        "command: ");
-        scanf("%d",&state);
-        if(state == NOTHING) break;
-        else if(state == CONTINUE){
-            fclose(fnum);
-            fnum = fopen("number.txt","w");
-            fprintf(fnum,"%d",0);
-            count = 0;
+        "1: initialize the recording.txt\n"
+        "2: exit the program.\n");
+        while(1){
+            printf("command: ");
+            scanf("%1d",&state);
+            if(state == NOTHING) break;
+            else if(state == CONTINUE){
+                fclose(frecord);
+                frecord = fopen(RECORD_NAME,"w");
+                break;
+            }
+            else if(state == BREAK) return 0;
+            else printf("\nyour input is not 1 or 2.\n"
+            "please try again.\n\n");
         }
-        else if(state == BREAK) return 0;
-        else printf("\nyour input is not 1 or 2.\n"
-        "please try again.\n\n");
     }
     setbuf(stdin,NULL); // clear input buffer 
     while(1){
@@ -71,6 +94,7 @@ int main(){
                     list = malloc(sizeof(list_t)+strlen(str)+1);
                     list->prior = list->next = NULL;
                 } else{
+                    while(list->next != NULL) list = list->next;
                     list->next = malloc(sizeof(list_t)+strlen(str)+1);
                     prior = list;
                     list = list->next;
@@ -87,11 +111,20 @@ int main(){
                 fprintf(frecord,
                 "\nprice: %.2lf\n"
                 "----------\n",list->price);
-            }
+                printf(
+                    "----------------\n"
+                    "num: %d\n"
+                    "meal code: %s\n",list->number,list->meal);
+                    printf("meal name: %s",menu[list->meal[0]-'a'].name);
+                    for(int j = 1; j < strlen(list->meal); j++) printf(" %s",menu[list->meal[j]-'a'].name);
+                    printf(
+                    "\nprice: %.2lf\n"
+                    "----------------\n",list->price);
+                }
         } else if(!strcmp(command,"delete\n")){
             int number;
             while(1){
-                printf("delete the number of order: ");
+                printf("delete the number of order (exit 0): ");
                 fgets(str,LEN,stdin);
                 str[strlen(str)-1] = '\0';
                 if(!isnumber(str)){
@@ -100,12 +133,13 @@ int main(){
                 } else{
                     number = atoi(str);
                     printf("detele number %d order\n",number);
+                    fclose(frecord);
                     if(delete(&list,number)) break;
+                    frecord = fopen(RECORD_NAME,"a+");
                 }
             }
-            printf("success to delete.\n");
             fclose(frecord);
-            del_record(number);
+            // del_record(number);
             frecord = fopen(RECORD_NAME,"a+");
         } else if(!strcmp(command,"exit\n")){
             printf("close the program.\n");
