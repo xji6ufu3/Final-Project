@@ -58,3 +58,9 @@ void printMenu(){
         menu[i].time,menu[i].ingredients);
     }
 }
+int isnumber(char str[]){
+    for(int i = 0; i < strlen(str); i++)
+        if(!('0' <= str[i] && str[i] <= '9'))
+            return 0;
+    return 1;
+}

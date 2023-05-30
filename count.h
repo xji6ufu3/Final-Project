@@ -14,5 +14,6 @@ extern struct menu_t{
     char *name;
     char *ingredients;
 } menu[LEN];
+int isnumber(char str[]);
 
 #endif
