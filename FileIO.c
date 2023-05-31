@@ -69,7 +69,7 @@ void traverse(list_t *list){
         return;
     }
     puts("----------------");
-    while(list != NULL) list = list->prior;
+    while(list->prior != NULL) list = list->prior;
     while(list != NULL){
         printf(
             "num: %d\n"
@@ -79,5 +79,70 @@ void traverse(list_t *list){
             printf(
             "\nprice: %.2lf\n"
             "----------------\n",list->price);
+        list = list->next;
     }
+}
+list_t* sort(list_t* head, char oper[]){
+    if(head == NULL){
+        puts("the order is empty.");
+        return NULL;
+    }
+    while(head->prior != NULL) head = head->prior;
+    list_t *cur, *tmp, *tail = NULL;
+    if(!strcmp(oper,"number")){
+        while(head != tail){
+            cur = head;
+            while(cur->next != tail){
+                if(cur->number > cur->next->number){
+                    tmp = cur->next;
+                    if(cur->prior != NULL) cur->prior->next = tmp;
+                    tmp->prior = cur->prior;
+                    cur->next = tmp->next;
+                    if(cur->next != NULL) cur->next->prior = cur;
+                    cur->prior = tmp;
+                    tmp->next = cur;
+                    if(cur == head) head = cur->prior;
+                } else{
+                    cur = cur->next;
+                }
+            }
+            tail = cur;
+        }
+    }
+    else if(!strcmp(oper,"price")){
+        while(head != tail){
+            cur = head;
+            while(cur->next != tail){
+                if(cur->price > cur->next->price){
+                    tmp = cur->next;
+                    if(cur->prior != NULL) cur->prior->next = tmp;
+                    tmp->prior = cur->prior;
+                    cur->next = tmp->next;
+                    if(cur->next != NULL) cur->next->prior = cur;
+                    cur->prior = tmp;
+                    tmp->next = cur;
+                    if(cur == head) head = cur->prior;
+                } else{
+                    cur = cur->next;
+                }
+            }
+            tail = cur;
+        }
+    }
+    FILE *frecord = fopen(RECORD_NAME,"w");
+    while(tail != NULL){
+        fprintf(frecord,
+            "number: %d\n"
+            "meal: %s",
+            tail->number,menu[tail->meal[0]-'a'].name);
+        for(int j = 1; j < strlen(tail->meal); j++)
+            fprintf(frecord," %s",menu[tail->meal[j]-'a'].name);
+        fprintf(frecord,
+            "\nprice: %.2lf\n"
+            "----------\n",
+            tail->price);
+        tail = tail->next;
+    }
+    fclose(frecord);
+    return head;
 }

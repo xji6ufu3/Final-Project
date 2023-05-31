@@ -12,5 +12,7 @@ typedef struct list_t{
 void free_list(list_t *ptr);
 void del_record(int number);
 int delete(list_t **list, int number);
+void traverse(list_t *list);
+list_t* sort(list_t* list, char oper[]);
 
 #endif

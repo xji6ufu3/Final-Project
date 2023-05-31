@@ -73,6 +73,9 @@ int main(){
             printf("\nhelp: list all the command that can be used.\n"
             "order: into ordering-food system\n"
             "delete: input the number of order you want to delete.\n"
+            "traverse: print all orders.\n"
+            "search: input the number of order, print the order detail.\n"
+            "sort: sort the order of order with number, price, or waiting time.\n"
             "exit: exit the program.\n\n");
         } else if(!strcmp(command,"order\n")){
             while(1){
@@ -140,6 +143,24 @@ int main(){
             }
             fclose(frecord);
             // del_record(number);
+            frecord = fopen(RECORD_NAME,"a+");
+        } else if(!strcmp(command,"traverse\n")){
+            traverse(list);
+        } else if(!strcmp(command,"search\n")){
+
+        } else if(!strcmp(command,"sort\n")){
+            char oper[10];
+            while(1){
+                printf("sort by what (number, price, exit): ");
+                fgets(oper,9,stdin);
+                oper[strlen(oper)-1] = '\0';
+                if(!strcmp(oper,"number") || !strcmp(oper,"price") || !strcmp(oper,"exit"))
+                    break;
+                else printf("wrong, please try again.\n");
+            }
+            if(!strcmp(oper,"exit")) continue;
+            fclose(frecord);
+            list = sort(list,oper);
             frecord = fopen(RECORD_NAME,"a+");
         } else if(!strcmp(command,"exit\n")){
             printf("close the program.\n");
