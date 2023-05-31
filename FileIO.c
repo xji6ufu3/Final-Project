@@ -56,6 +56,7 @@ int delete(list_t **list, int number){
             }
             free(ptr);
             del_record(number);
+            printf("detele number %d order\n",number);
             return 1;
         }
         ptr = ptr->prior;
@@ -145,4 +146,31 @@ list_t* sort(list_t* head, char oper[]){
     }
     fclose(frecord);
     return head;
+}
+int search(list_t *list, int number){
+    if(list == NULL || number == 0){
+        if(list == NULL) printf("the food order is empty.\n");
+        else if(number == 0) puts("end search.");
+        return 1;
+    }
+    list_t *ptr = list;
+    while(ptr != NULL){
+        if(ptr->number == number){
+            puts("----------------");
+            print_order(ptr);
+            return 1;
+        }
+        ptr = ptr->prior;
+    }
+    ptr = list->next;
+    while(ptr != NULL){
+        if(ptr->number == number){
+            puts("----------------");
+            print_order(ptr);
+            return 1;
+        }
+        ptr = ptr->next;
+    }
+    printf("not found %d order.\nplease try again.\n",number);
+    return 0;
 }

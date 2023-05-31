@@ -14,5 +14,6 @@ void del_record(int number);
 int delete(list_t **list, int number);
 void traverse(list_t *list);
 list_t* sort(list_t* list, char oper[]);
+int search(list_t *list, int number);
 
 #endif

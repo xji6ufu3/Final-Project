@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "count.h"
+#include "FileIO.h"
 #define LEN 26
 int foodnum;
 struct menu_t menu[LEN];
@@ -63,4 +64,15 @@ int isnumber(char str[]){
         if(!('0' <= str[i] && str[i] <= '9'))
             return 0;
     return 1;
+}
+void print_order(list_t *list){
+    printf(
+        "num: %d\n"
+        "meal code: %s\n",list->number,list->meal);
+    printf("meal name: %s",menu[list->meal[0]-'a'].name);
+    for(int j = 1; j < strlen(list->meal); j++) 
+        printf(" %s",menu[list->meal[j]-'a'].name);
+    printf(
+        "\nprice: %.2lf\n"
+        "----------------\n",list->price);
 }

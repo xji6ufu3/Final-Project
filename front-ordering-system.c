@@ -114,16 +114,9 @@ int main(){
                 fprintf(frecord,
                 "\nprice: %.2lf\n"
                 "----------\n",list->price);
-                printf(
-                    "----------------\n"
-                    "num: %d\n"
-                    "meal code: %s\n",list->number,list->meal);
-                    printf("meal name: %s",menu[list->meal[0]-'a'].name);
-                    for(int j = 1; j < strlen(list->meal); j++) printf(" %s",menu[list->meal[j]-'a'].name);
-                    printf(
-                    "\nprice: %.2lf\n"
-                    "----------------\n",list->price);
-                }
+                puts("----------------");
+                print_order(list);
+            }
         } else if(!strcmp(command,"delete\n")){
             int number;
             while(1){
@@ -135,7 +128,6 @@ int main(){
                     continue;
                 } else{
                     number = atoi(str);
-                    printf("detele number %d order\n",number);
                     fclose(frecord);
                     if(delete(&list,number)) break;
                     frecord = fopen(RECORD_NAME,"a+");
@@ -147,7 +139,19 @@ int main(){
         } else if(!strcmp(command,"traverse\n")){
             traverse(list);
         } else if(!strcmp(command,"search\n")){
-
+            while(1){
+                printf("the number of order (exit 0): ");
+                int number;
+                fgets(str,LEN,stdin);
+                str[strlen(str)-1] = '\0';
+                if(!isnumber(str)){
+                    printf("\nwrong, it is not a digit.\n\n");
+                    continue;
+                } else{
+                    number = atoi(str);
+                    if(search(list,number)) break;
+                }
+            }
         } else if(!strcmp(command,"sort\n")){
             char oper[10];
             while(1){
@@ -183,14 +187,7 @@ int main(){
         ptr = list;
         while(ptr->prior != NULL) ptr = ptr->prior;
         for(; ptr != NULL; ptr = ptr->next){
-            printf(
-            "num: %d\n"
-            "meal code: %s\n",ptr->number,ptr->meal);
-            printf("meal name: %s",menu[ptr->meal[0]-'a'].name);
-            for(int j = 1; j < strlen(ptr->meal); j++) printf(" %s",menu[ptr->meal[j]-'a'].name);
-            printf(
-            "\nprice: %.2lf\n"
-            "----------------\n",ptr->price);
+            print_order(ptr);
         }
     }
     #endif

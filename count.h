@@ -1,3 +1,4 @@
+#include "FileIO.h"
 #ifndef COUNT
 #define COUNT
 
@@ -15,5 +16,6 @@ extern struct menu_t{
     char *ingredients;
 } menu[LEN];
 int isnumber(char str[]);
+void print_order(list_t *list);
 
 #endif
