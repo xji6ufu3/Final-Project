@@ -104,7 +104,7 @@ int main(){
     #endif // HARD
 
     for(int i=0; i<num_dish; i++){
-        int num_ingredient=how_many_ingredient(temp_dish);
+        //int num_ingredient=how_many_ingredient(temp_dish);
         int succeed=1;
         clock_t start, end, gap;
 
