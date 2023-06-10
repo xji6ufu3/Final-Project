@@ -204,7 +204,6 @@ void read_and_store_the_menu()
             }
         }
         menu[i].next=NULL;
-        printf("%d %s %f %d %d %s\n", menu[i].menu_code, menu[i].name.word, menu[i].price, menu[i].time, menu[i].num_ingredient, menu[i].ingredient.word);
     }
 
     fclose(f_menu);
@@ -397,14 +396,14 @@ void calculate_money(struct node_ty* first, float* month_earn, int possible_endi
         //printf("%d", first->menu_code);
         //fprintf(f_cook, "%d", first->menu_code);
         money+=temp->price;
-        printf("%.2f ", money);
+        //printf("%.2f ", money);
         first=temp->next;
         free(temp);
     }
-    printf("\nbefore=%.2f\n", month_earn);
+    //printf("\nbefore=%.2f\n", month_earn);
 
     //再處理加成
-    printf("possible_ending=%d found_money=%d hard=%d\n", possible_ending, found_money, hard);
+    //printf("possible_ending=%d found_money=%d hard=%d\n", possible_ending, found_money, hard);
 
     if(possible_ending) money*=1.1;
     else money/=2;
@@ -414,7 +413,7 @@ void calculate_money(struct node_ty* first, float* month_earn, int possible_endi
 
     //加進這個月的總金額裡
     *(month_earn)+=money;
-    printf("after=%.2f", *month_earn);
+    //printf("after=%.2f", *month_earn);
 }
 
 void store_data(float month_earn)
