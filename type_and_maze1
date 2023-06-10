@@ -137,7 +137,7 @@ int main(){
         for(int i=0; i<ROWS; i++){
             for(int j=0; j<COLS; j++){
                 if(maze[i][j] == '1'){
-                    maze[i][j] = '0';//把死路換成O
+                    maze[i][j] = 'O';//把死路換成O
                 }
                 else if(maze[i][j] == '2'){
                     maze[i][j] = '.';//把活路換成.
