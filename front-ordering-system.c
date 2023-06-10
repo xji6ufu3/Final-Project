@@ -17,7 +17,7 @@ int main(){
     FILE *frecord = fopen(RECORD_NAME,"a+");
     FILE *fnum = fopen("number.txt","r");
     FILE *fmenu = fopen("menu.txt","r");
-    FILE *forder = fopen("order.txt","a");
+    FILE *forder = fopen("order.txt","w");
     initialMenu(fmenu);
     #if DEBUG
         printMenu();
