@@ -169,11 +169,11 @@ int main(){
             }
             printf_Maze(maze);
             time(&endTime);
-            /*if(difftime(endTime, startTime) >= TIME){//若遊玩時間大於30秒，遊戲停止
+            if(difftime(endTime, startTime) >= TIME){//若遊玩時間大於30秒，遊戲停止
                 printf("Time is up!");
                 possible_ending = 0;//沒有完成遊戲
                 break;
-            }*/
+            }
         }
         //迷宮結束
         calculate_money(first, &month_earn, possible_ending, found_money, hard);
