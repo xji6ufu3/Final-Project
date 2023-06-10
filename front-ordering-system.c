@@ -17,6 +17,7 @@ int main(){
     FILE *frecord = fopen(RECORD_NAME,"a+");
     FILE *fnum = fopen("number.txt","r");
     FILE *fmenu = fopen("menu.txt","r");
+    FILE *forder = fopen("order.txt","a");
     initialMenu(fmenu);
     #if DEBUG
         printMenu();
@@ -115,6 +116,7 @@ int main(){
                 "\nprice: %.2lf\n"
                 "----------\n",list->price);
                 puts("----------------");
+                fprintf(forder,"%s\n",list->meal);
                 print_order(list);
             }
         } else if(!strcmp(command,"delete\n")){
@@ -181,6 +183,7 @@ int main(){
     fprintf(fnum,"%d",count);
     fclose(fnum);
     fclose(frecord);
+    fclose(forder);
     #if DEBUG // check all order in the list
     if(list != NULL){
         puts("----------------");
@@ -193,6 +196,9 @@ int main(){
     #endif
     free_list(list);
     free_menu();
+    
+    system("start cmd.exe /K type_basic.exe");
+    return 0;
 }
 enum state_t check_meal_code(char str[]){
     int wrong = 0, len = strlen(str);
