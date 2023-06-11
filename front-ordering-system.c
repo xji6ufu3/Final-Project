@@ -17,7 +17,7 @@ int main(){
     FILE *frecord = fopen(RECORD_NAME,"a+");
     FILE *fnum = fopen("number.txt","r");
     FILE *fmenu = fopen("menu.txt","r");
-    FILE *forder = fopen("order.txt","w");
+    FILE *forder = fopen("order.txt","a+");
     initialMenu(fmenu);
     #if DEBUG
         printMenu();
@@ -59,6 +59,8 @@ int main(){
             else if(state == CONTINUE){
                 fclose(frecord);
                 frecord = fopen(RECORD_NAME,"w");
+                fclose(forder);
+                forder = fopen("order.txt","w");
                 break;
             }
             else if(state == BREAK) return 0;
@@ -131,13 +133,17 @@ int main(){
                 } else{
                     number = atoi(str);
                     fclose(frecord);
+                    fclose(forder);
                     if(delete(&list,number)) break;
                     frecord = fopen(RECORD_NAME,"a+");
+                    forder = fopen("order.txt","a+");
                 }
             }
             fclose(frecord);
             // del_record(number);
             frecord = fopen(RECORD_NAME,"a+");
+            fclose(forder);
+            forder = fopen("order.txt","a+");
         } else if(!strcmp(command,"traverse\n")){
             traverse(list);
         } else if(!strcmp(command,"search\n")){

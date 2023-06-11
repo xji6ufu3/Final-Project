@@ -1,0 +1,16 @@
+number: 1
+meal: µf­Xª£³J
+price: 3.30
+----------
+number: 2
+meal: ¤û¦×ÄÑ
+price: 7.40
+----------
+number: 4
+meal: ¤û¦×ª£³J ©M¤ûº~³ù ©M¤ûº~³ù
+price: 25.40
+----------
+number: 5
+meal: «C´Ô¤û¬h
+price: 4.60
+----------

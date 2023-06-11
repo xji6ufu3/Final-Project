@@ -12,26 +12,48 @@ void free_list(list_t *ptr){
     }
 }
 void del_record(int number){
-    char target[20], str[200];
+    char target[20], str[200], str2[200];
     sprintf(target,"number: %d\n",number);
     FILE *fin = fopen(RECORD_NAME,"r");
     FILE *fout = fopen(RECORD_NAME_TEMP,"w");
-    if(fin == NULL || fout == NULL){
+    FILE *foin = fopen("order.txt","r");
+    FILE *foout = fopen("order-temp.txt","w");
+    if(fin == NULL || fout == NULL || foin == NULL || foout == NULL){
         printf("fail to open the file at del_record().\n");
         return;
     }
+    int count = 0;
     while(fgets(str,199,fin) != NULL){
-        if(strncmp(str,target,20)) fprintf(fout,"%s",str);
+        if(strncmp(str,target,20)){
+            fprintf(fout,"%s",str);
+            if(count % 4 == 0){
+                fgets(str2,199,foin);
+                fprintf(foout,"%s",str2);
+            }
+        }
         else break;
+        count++;
     }
     for(int i = 0; i < 3; i++) fgets(str,199,fin);
+    fgets(str,199,foin);
+    count = 0;
     while(fgets(str,199,fin) != NULL){
         fprintf(fout,"%s",str);
+        if(count % 4 == 0){
+            fgets(str2,199,foin);
+            fprintf(foout,"%s",str2);
+        }
+        count++;
     }
+    
     fclose(fin);
     fclose(fout);
+    fclose(foin);
+    fclose(foout);
     remove(RECORD_NAME);
     rename(RECORD_NAME_TEMP,RECORD_NAME);
+    remove("order.txt");
+    rename("order-temp.txt","order.txt");
 }
 int delete(list_t **list, int number){
     list_t *priptr, *nextptr, *ptr = *list;
