@@ -47,8 +47,8 @@ void read_and_store_the_menu();//存取菜單
 void read_order(int *num_people);//讀取訂單
 void ask_hard_mode(int* hard);//是否挑戰困難模式
 void make_order(int num_dish, int witch_people);//製作訂單
-void output_1(struct node_ty* now_dish);//叫他要幹嘛的輸出
-void input_and_judge(struct node_ty* now_dish, int* succeed, int hard);//輸入並判斷結果
+void output_1(struct node_ty* now_dish, int limit_time);//叫他要幹嘛的輸出
+void input_and_judge(struct node_ty* now_dish, int* succeed, int hard, int limit_time);//輸入並判斷結果
 void output_2(int succeed, struct node_ty* now_dish, struct node_ty* first, struct node_ty* front_dish);//輸出結果
 void delete_dish(struct node_ty** first, struct node_ty** now_dish, struct node_ty** front_dish);//如果做錯菜要把菜丟掉
 void calculate_money(struct node_ty* first, float* month_earn, int possible_ending, int found_money, int hard);//算錢
@@ -77,7 +77,7 @@ int main(){
     for(int witch_people=0; witch_people<num_people; witch_people++)
     {
         int num_dish=strlen(people[witch_people].word);//一個人的訂單有幾樣菜要做
-
+	    
         make_order(num_dish, witch_people);
         struct node_ty* first=dish[0];
         struct node_ty* now_dish=first;
@@ -89,9 +89,12 @@ int main(){
 
         for(int i=0; i<num_dish; i++){
             int succeed=1;
+	    int limit_time;
+	    limit_time=(now_dish->num_ingredient)*3;
+	    if(hard) limit_time+=now_dish->num_ingredient;
 
-            output_1(now_dish);
-            input_and_judge(now_dish, &succeed, hard);
+            output_1(now_dish, limit_time);
+            input_and_judge(now_dish, &succeed, hard, limit_time);
             output_2(succeed, now_dish, first, front_dish);
 
             now_dish=now_dish->next;
@@ -314,12 +317,12 @@ void convert_letters(struct node_ty* first, int num_dish)
     }
 }
 
-void output_1(struct node_ty* now_dish)
+void output_1(struct node_ty* now_dish, int limit_time)
 {
     printf("Let cook %s !!\n", now_dish->name.word);
     printf("Type \"");
     printf("%s", now_dish->ingredient.word);
-    printf("\" in 10 seconds\n");
+    printf("\" in %d seconds\n", limit_time);
     for(int i=3; i>=1; i--){//倒數計時3秒鐘
         printf("%d ",i);
         sleep(1);
@@ -327,7 +330,7 @@ void output_1(struct node_ty* now_dish)
     printf("\nSTART!\n");
 }
 
-void input_and_judge(struct node_ty* now_dish, int* succeed, int hard)
+void input_and_judge(struct node_ty* now_dish, int* succeed, int hard, int limit_time)
 {
 
     clock_t start, end, gap;
@@ -358,7 +361,7 @@ void input_and_judge(struct node_ty* now_dish, int* succeed, int hard)
     int compare=strcmp(com1, com2);
 
     if(compare!=0) *succeed=2;//錯字
-    else if(*succeed==1 && gap>10) *succeed=3;//超時
+    else if(*succeed==1 && gap>limit_time) *succeed=3;//超時
 }
 
 void output_2(int succeed, struct node_ty* now_dish, struct node_ty* first, struct node_ty* front_dish)
