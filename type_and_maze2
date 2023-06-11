@@ -6,7 +6,6 @@
 #include <unistd.h>
 #include <conio.h>
 
-#define MAXLEN_WORD 20
 #define NUM_MENU 20
 
 #define ROWS 19 //邊長
@@ -14,7 +13,7 @@
 #define TIME 30 //遊戲時間秒數
 
 typedef struct{
-    char word[MAXLEN_WORD];
+    char word[100];
 }string;
 
 struct node_ty{
