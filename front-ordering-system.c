@@ -197,7 +197,7 @@ int main(){
     free_list(list);
     free_menu();
     
-    system("start cmd.exe /K type_basic.exe");
+    system("start cmd.exe /K type_and_maze2.exe");
     return 0;
 }
 enum state_t check_meal_code(char str[]){

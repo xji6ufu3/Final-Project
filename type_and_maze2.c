@@ -6,15 +6,16 @@
 #include <unistd.h>
 #include <conio.h>
 
-#define MAXLEN_WORD 20
 #define NUM_MENU 20
 
 #define ROWS 19 //邊長
 #define COLS 19
 #define TIME 30 //遊戲時間秒數
 
+#define DEBUG 1
+
 typedef struct{
-    char word[MAXLEN_WORD];
+    char word[100];
 }string;
 
 struct node_ty{
@@ -194,15 +195,28 @@ void read_and_store_the_menu()
     }
 
     for(int i=0; i<NUM_MENU; i++){
-        fscanf(f_menu, "%d %s %f %d %d %s",
-            &menu[i].menu_code, menu[i].name.word, &menu[i].price, &menu[i].time, &menu[i].num_ingredient, menu[i].ingredient.word);
-
+        // fscanf(f_menu, "%d %s %f %d %d %s",
+        //     &menu[i].menu_code, menu[i].name.word, &menu[i].price, &menu[i].time, &menu[i].num_ingredient, menu[i].ingredient.word);
+        char str[200], *p;
+        fgets(str,200,f_menu);
+        strtok(str," \n");
+        menu[i].menu_code = i+1;
+        strcpy(menu[i].name.word,strtok(NULL," \n"));
+        menu[i].price = atof(strtok(NULL," \n"));
+        menu[i].time = atoi(strtok(NULL," \n"));
+        strcpy(menu[i].ingredient.word,strtok(NULL," \n"));
         int len=strlen(menu[i].ingredient.word);
+        menu[i].num_ingredient = 1;
         for(int j=0; j<len; j++){
             if(menu[i].ingredient.word[j]==','){
                 menu[i].ingredient.word[j]=' ';
+                menu[i].num_ingredient++;
             }
         }
+        #if DEBUG
+        printf( "%d %s %f %d %d %s\n",
+            menu[i].menu_code, menu[i].name.word, menu[i].price, menu[i].time, menu[i].num_ingredient, menu[i].ingredient.word);
+        #endif
         menu[i].next=NULL;
     }
 
