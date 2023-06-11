@@ -663,11 +663,11 @@ void whether_continue()
         choose[0]=tolower(choose[0]);
 
         if(choose[0]=='y'){
-            system("star cmd.exe /K front.exe");
+            system("start cmd.exe /K front.exe");
             break;
         }
         else if(choose[0]=='n'){
-            system("star cmd.exe /K bigbigstage.exe");
+            system("start cmd.exe /K bigbigstage.exe");
             break;
         }
         else{
