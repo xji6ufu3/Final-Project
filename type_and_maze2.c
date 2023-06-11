@@ -12,7 +12,7 @@
 #define COLS 19
 #define TIME 30 //遊戲時間秒數
 
-#define DEBUG 0
+#define DEBUG 1
 
 typedef struct{
     char word[100];
@@ -52,7 +52,7 @@ void input_and_judge(struct node_ty* now_dish, int* succeed, int hard, int limit
 void output_2(int succeed, struct node_ty* now_dish, struct node_ty* first, struct node_ty* front_dish);//輸出結果
 void delete_dish(struct node_ty** first, struct node_ty** now_dish, struct node_ty** front_dish);//如果做錯菜要把菜丟掉
 void calculate_money(struct node_ty* first, float* month_earn, int possible_ending, int found_money, int hard);//算錢
-void store_data(float month_earn);//把這個月賺的錢存到file裡
+void store_data(float month_earn, int total_dish);//把這個月賺的錢存到file裡
 //maze
 void add_to_list(struct node *tail, int x, int y);//新增走過哪些路
 void pop_back(struct node *tail);//刪掉死路
@@ -68,6 +68,7 @@ int main(){
     int num_people=0;
     int hard=0;//困難模式 成功的話最後錢會2倍
     float month_earn=0;
+    int total_dish=0;
 
     read_and_store_the_menu();
     read_order(&num_people);
@@ -77,7 +78,8 @@ int main(){
     for(int witch_people=0; witch_people<num_people; witch_people++)
     {
         int num_dish=strlen(people[witch_people].word);//一個人的訂單有幾樣菜要做
-	    
+        total_dish+=num_dish;
+
         make_order(num_dish, witch_people);
         struct node_ty* first=dish[0];
         struct node_ty* now_dish=first;
@@ -159,7 +161,7 @@ int main(){
         }
 
         //遊戲開始
-        printf("You only have %d seconds!\nUse the arrow key on the keyboard.\n", TIME);
+        printf("You only have %d seconds!\n", TIME);
         for(int i=3; i>=1; i--){//倒數計時3秒鐘
             printf("%d\n",i);
             sleep(1);
@@ -183,7 +185,8 @@ int main(){
         calculate_money(first, &month_earn, possible_ending, found_money, hard);
 
     }
-    store_data(month_earn);
+
+    store_data(month_earn, total_dish);
 
     return 0;
 }
@@ -433,10 +436,10 @@ void calculate_money(struct node_ty* first, float* month_earn, int possible_endi
     //printf("after=%.2f", *month_earn);
 }
 
-void store_data(float month_earn)
+void store_data(float month_earn, int total_dish)
 {
     FILE* f_after_game=fopen("after_game.txt", "w");
-    fprintf(f_after_game, "%.2f", month_earn);
+    fprintf(f_after_game, "%.2f %d", month_earn, total_dish);
 
     fclose(f_after_game);
 }
