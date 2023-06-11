@@ -12,7 +12,7 @@
 #define COLS 19
 #define TIME 30 //遊戲時間秒數
 
-#define DEBUG 1
+#define DEBUG 0
 
 typedef struct{
     char word[100];
