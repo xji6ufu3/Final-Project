@@ -159,7 +159,7 @@ int main(){
         }
 
         //遊戲開始
-        printf("You only have %d seconds!\n", TIME);
+        printf("You only have %d seconds!\nUse the arrow key on the keyboard.\n", TIME);
         for(int i=3; i>=1; i--){//倒數計時3秒鐘
             printf("%d\n",i);
             sleep(1);
