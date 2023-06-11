@@ -61,6 +61,8 @@ void chance_card(int num, int *possible_ending, int *found_money);//機會命運
 void player(char maze[ROWS][COLS], int *x, int *y, int *possible_ending, int *found_money);//玩家部分
 void printf_Maze(char maze[ROWS][COLS]);//印玩家走後的地圖
 void countdown(int seconds);//時間倒數
+void whether_continue();//要繼續嗎?
+
 
 
 /*main*/
@@ -187,6 +189,8 @@ int main(){
     }
 
     store_data(month_earn, total_dish);
+
+    whether_continue();
 
     return 0;
 }
@@ -643,4 +647,31 @@ void countdown(int seconds) {//時間倒數
         seconds--;
     }
     exit(0);
+}
+
+void whether_continue()
+{
+    char choose[3];
+    //int choose;
+
+    while(1){
+        printf("Do you want to continue ????\n");
+        printf("Y/N:");
+        fgets(choose, 3, stdin);
+
+        choose[2]='\0';
+        choose[0]=tolower(choose[0]);
+
+        if(choose[0]=='y'){
+            system("star cmd.exe /K front.exe");
+            break;
+        }
+        else if(choose[0]=='n'){
+            system("star cmd.exe /K bigbigstage.exe");
+            break;
+        }
+        else{
+            printf("invalid input !!!!\n");
+        }
+    }
 }
