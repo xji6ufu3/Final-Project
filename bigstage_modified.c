@@ -15,7 +15,7 @@ int main()
     {
         // 乞丐
         printf("YOU ARE A LOSER!\nHow did you lose all your money?\nThe restaurant has gone bankrupt! Game over!");
-        end[3] = 'A';
+        end[0] = 'A';
     }
     else
     {
@@ -23,12 +23,12 @@ int main()
         if (usd_money / quantity <= 10)
         {
             printf("wow!It seems like you're a skilled restaurant manager.\nCongratulations on earning the title of 'Street Chef Extraordinaire'!");
-            end[3] = 'B';
+            end[0] = 'B';
         }
         else
         {
             printf("Oh my, you're truly a genius at running a restaurant! Congratulations on earning the title of 'Master Chef'!");
-            end[3] = 'C';
+            end[0] = 'C';
         }
     }
     fclose(usd);
