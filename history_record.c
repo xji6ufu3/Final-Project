@@ -165,6 +165,24 @@ int his_search(int choice, int num)
     //  取值的部分要寫result.earn跟result.dishes
 }
 
+int counting()
+{
+    int num;
+    int count = 0;
+    FILE *f_count;
+    f_count = fopen("counting.txt", "r+");
+    if (f_count == NULL)
+    {
+        printf("Failed to open the file.\n");
+        return 0;
+    }
+    while (fscanf(f_count, "%d", &num) == 1)
+        count += 1;
+    fprintf(f_count, "%d", count);
+    fclose(f_count);
+    return 0;
+}
+
 //  這個main是我拿來測試檔案亂設的變數，不要管它
 // int main()
 // {
