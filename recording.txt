@@ -1,0 +1,8 @@
+number: 3
+meal: µf­Xª£³J
+price: 3.30
+----------
+number: 1
+meal: µf­Xª£³J ¤û¦×ÄÑ «C´Ôª£³J
+price: 18.90
+----------

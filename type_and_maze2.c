@@ -12,7 +12,7 @@
 #define COLS 15
 #define TIME 30 //遊戲時間秒數
 
-#define DEBUG 1
+#define DEBUG 0
 #define SPACE ' '
 #define WALL '#'
 #define PLAYER '*'
