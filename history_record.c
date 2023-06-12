@@ -127,6 +127,7 @@ typedef struct
 {
     int earn;
     int dishes;
+    int choice;
 } values;
 
 // 讀取歷史紀錄  然後回傳earn跟dishes
@@ -183,6 +184,17 @@ int counting()
     return 0;
 }
 
+values earn_initialization()
+{
+    values value;
+    FILE *f_history = fopen("history.txt", "r");
+    fseek(f_history, 0, SEEK_END);
+    fscanf(f_history, "%d %f %d", value.choice, value.his_earn, value.his_dishes);
+    fclose(f_history);
+    // printf("%f %d", value.his_earn, value.his_dishes);
+    return value;
+}
+
 //  這個main是我拿來測試檔案亂設的變數，不要管它
 // int main()
 // {
@@ -206,6 +218,3 @@ int counting()
 //     return 0;
 // }
 
-//  這整份應該是會放在整個程式的尾巴
-//  幫我存一個txt檔，在每次結束的時候次數都加一，然後存數字進去
-//  因為我要讀那個num，感謝，有問題再問我。
