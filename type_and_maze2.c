@@ -8,8 +8,8 @@
 
 #define NUM_MENU 20
 
-#define ROWS 19 //邊長
-#define COLS 19
+#define ROWS 15 //邊長
+#define COLS 15
 #define TIME 30 //遊戲時間秒數
 
 #define DEBUG 1
