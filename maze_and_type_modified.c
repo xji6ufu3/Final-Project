@@ -21,13 +21,12 @@
 #define DOOR '4'
 
 //  用來儲存讀取歷史紀錄的變數
-typedef struct
-{
-    int choice;
-    int his_earn;
-    int his_dishes;
-} values;
-values value;
+// typedef struct
+// {
+//     int choice;
+//     int his_earn;
+//     int his_dishes;
+// } values;
 
 typedef struct
 {
@@ -70,7 +69,7 @@ void input_and_judge(struct node_ty *now_dish, int *succeed, int hard, int limit
 void output_2(int succeed, struct node_ty *now_dish, struct node_ty *first, struct node_ty *front_dish);        // 輸出結果
 void delete_dish(struct node_ty **first, struct node_ty **now_dish, struct node_ty **front_dish);               // 如果做錯菜要把菜丟掉
 void calculate_money(struct node_ty *first, float *month_earn, int possible_ending, int found_money, int hard); // 算錢
-void store_data(float month_earn);                                                                              // 把這個月賺的錢存到file裡
+void store_data(float month_earn, int total_dish);                                                              // 把這個月賺的錢存到file裡
 // maze
 void add_to_list(struct node *tail, int x, int y);                                          // 新增走過哪些路
 void pop_back(struct node *tail);                                                           // 刪掉死路
@@ -79,6 +78,7 @@ void chance_card(int num, int *possible_ending, int *found_money);              
 void player(char maze[ROWS][COLS], int *x, int *y, int *possible_ending, int *found_money); // 玩家部分
 void printf_Maze(char maze[ROWS][COLS]);                                                    // 印玩家走後的地圖
 void countdown(int seconds);                                                                // 時間倒數
+void whether_continue();                                                                    // 要繼續嗎?
 
 /*main*/
 int main()
@@ -86,6 +86,20 @@ int main()
     int num_people = 0;
     int hard = 0; // 困難模式 成功的話最後錢會2倍
     float month_earn = 0;
+    int total_dish;
+
+    // 會影響到dish的初始值
+    values value;
+    FILE *f_history = fopen("history.txt", "r");
+    fseek(f_history, 0, SEEK_END); // 定位到文件的最後
+    fscanf(f_history, "%d %f %d", &value.choice, &value.his_earn, &value.his_dishes);
+    if (value.choice == 1)
+    {
+        earn_initialization();
+        total_dish = value.his_dishes;
+    }
+    else
+        total_dish = 0;
 
     read_and_store_the_menu();
     read_order(&num_people);
@@ -215,7 +229,8 @@ int main()
         // 迷宮結束
         calculate_money(first, &month_earn, possible_ending, found_money, hard);
     }
-    store_data(month_earn);
+    store_data(month_earn, total_dish);
+    whether_continue();
 
     return 0;
 }
@@ -467,10 +482,11 @@ void delete_dish(struct node_ty **first, struct node_ty **now_dish, struct node_
 void calculate_money(struct node_ty *first, float *month_earn, int possible_ending, int found_money, int hard)
 {
     float money;
+    values value;
     // 歷史紀錄的東西加在這邊   主要是影響到金額的初始值
     FILE *f_history = fopen("history.txt", "r");
     fseek(f_history, 0, SEEK_END); // 定位到文件的最後
-    sscanf(f_history, "%d %f %d", value.choice, value.his_earn, value.his_dishes);
+    fscanf(f_history, "%d %f %d", &value.choice, &value.his_earn, &value.his_dishes);
     if (value.choice == 1)
     {
         earn_initialization();
@@ -478,7 +494,6 @@ void calculate_money(struct node_ty *first, float *month_earn, int possible_endi
     }
     else
         money = 0;
-
     // 先把總金額結算好
     struct node_ty *temp;
     while (first != NULL)
@@ -511,10 +526,10 @@ void calculate_money(struct node_ty *first, float *month_earn, int possible_endi
     // printf("after=%.2f", *month_earn);
 }
 
-void store_data(float month_earn)
+void store_data(float month_earn, int total_dish)
 {
     FILE *f_after_game = fopen("after_game.txt", "w");
-    fprintf(f_after_game, "%.2f", month_earn);
+    fprintf(f_after_game, "%.2f %d", month_earn, total_dish);
 
     fclose(f_after_game);
 }
@@ -751,4 +766,35 @@ void countdown(int seconds)
         seconds--;
     }
     exit(0);
+}
+
+void whether_continue()
+{
+    char choose[3];
+    // int choose;
+
+    while (1)
+    {
+        printf("Do you want to continue ????\n");
+        printf("Y/N:");
+        fgets(choose, 3, stdin);
+
+        choose[2] = '\0';
+        choose[0] = tolower(choose[0]);
+
+        if (choose[0] == 'y')
+        {
+            system("start cmd.exe /K front.exe");
+            break;
+        }
+        else if (choose[0] == 'n')
+        {
+            system("start cmd.exe /K bigbigstage.exe");
+            break;
+        }
+        else
+        {
+            printf("invalid input !!!!\n");
+        }
+    }
 }
