@@ -74,7 +74,7 @@ int main(){
     int num_people=0;
     int hard=0;//困難模式 成功的話最後錢會2倍
     float month_earn=0;
-    int total_dish
+    int total_dish;
 
     read_and_store_the_menu();
     read_order(&num_people);
