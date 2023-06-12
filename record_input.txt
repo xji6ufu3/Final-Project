@@ -1,0 +1,16 @@
+2023/06/12 02:10:31   Earn : $003.0    Dishes : 03    Ending : a
+2023/06/12 02:45:38   Earn : $003.0    Dishes : 03    Ending : a
+2023/06/12 03:10:29   Earn : $003.0    Dishes : 03    Ending : a
+2023/06/12 03:10:29   Earn : $004.0    Dishes : 04    Ending : a
+2023/06/12 15:07:06   Earn : $001.0    Dishes : 01    Ending : a
+2023/06/12 15:07:06   Earn : $002.0    Dishes : 02    Ending : a
+2023/06/12 15:07:06   Earn : $003.0    Dishes : 03    Ending : a
+2023/06/12 15:07:06   Earn : $004.0    Dishes : 04    Ending : a
+2023/06/12 16:33:41   Earn : $001.0    Dishes : 01    Ending : a
+2023/06/12 16:33:41   Earn : $002.0    Dishes : 02    Ending : a
+2023/06/12 16:33:41   Earn : $003.0    Dishes : 03    Ending : a
+2023/06/12 16:33:41   Earn : $004.0    Dishes : 04    Ending : a
+2023/06/12 16:35:25   Earn : $001.0    Dishes : 01    Ending : a
+2023/06/12 16:35:25   Earn : $002.0    Dishes : 02    Ending : a
+2023/06/12 16:35:25   Earn : $003.0    Dishes : 03    Ending : a
+2023/06/12 16:35:25   Earn : $004.0    Dishes : 04    Ending : a

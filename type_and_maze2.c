@@ -12,7 +12,12 @@
 #define COLS 19
 #define TIME 30 //遊戲時間秒數
 
-#define DEBUG 0
+#define DEBUG 1
+#define SPACE '0'
+#define WALL '1'
+#define PLAYER '2'
+#define CHANCE '3'
+#define DOOR '4'
 
 typedef struct{
     char word[100];
@@ -52,7 +57,7 @@ void input_and_judge(struct node_ty* now_dish, int* succeed, int hard, int limit
 void output_2(int succeed, struct node_ty* now_dish, struct node_ty* first, struct node_ty* front_dish);//輸出結果
 void delete_dish(struct node_ty** first, struct node_ty** now_dish, struct node_ty** front_dish);//如果做錯菜要把菜丟掉
 void calculate_money(struct node_ty* first, float* month_earn, int possible_ending, int found_money, int hard);//算錢
-void store_data(float month_earn);//把這個月賺的錢存到file裡
+void store_data(float month_earn, int total_dish);//把這個月賺的錢存到file裡
 //maze
 void add_to_list(struct node *tail, int x, int y);//新增走過哪些路
 void pop_back(struct node *tail);//刪掉死路
@@ -61,6 +66,7 @@ void chance_card(int num, int *possible_ending, int *found_money);//機會命運
 void player(char maze[ROWS][COLS], int *x, int *y, int *possible_ending, int *found_money);//玩家部分
 void printf_Maze(char maze[ROWS][COLS]);//印玩家走後的地圖
 void countdown(int seconds);//時間倒數
+void whether_continue();//要繼續嗎?
 
 
 /*main*/
@@ -68,6 +74,7 @@ int main(){
     int num_people=0;
     int hard=0;//困難模式 成功的話最後錢會2倍
     float month_earn=0;
+    int total_dish;
 
     read_and_store_the_menu();
     read_order(&num_people);
@@ -135,19 +142,19 @@ int main(){
         }
 
         direction(maze, list, tail, count);//創建隨機地圖
-        maze[1][1] = '*';
-        maze[ROWS-2][COLS-2] = '#';//終點
+        maze[ROWS-2][COLS-2] = DOOR;//終點
 
         for(int i=0; i<ROWS; i++){
             for(int j=0; j<COLS; j++){
                 if(maze[i][j] == '1'){
-                    maze[i][j] = 'O';//把死路換成O
+                    maze[i][j] = WALL;//把死路換成O
                 }
                 else if(maze[i][j] == '2'){
-                    maze[i][j] = '.';//把活路換成.
+                    maze[i][j] = SPACE;//把活路換成.
                 }
             }
         }
+        maze[1][1] = PLAYER;
 
         for(int i=0; i<ROWS; i++){//印出地圖
             for(int j=0; j<COLS; j++){
@@ -159,7 +166,7 @@ int main(){
         }
 
         //遊戲開始
-        printf("You only have %d seconds!\n", TIME);
+        printf("You only have %d seconds!\nUse the arrow key on the keyboard.\n", TIME);
         for(int i=3; i>=1; i--){//倒數計時3秒鐘
             printf("%d\n",i);
             sleep(1);
@@ -183,14 +190,15 @@ int main(){
         calculate_money(first, &month_earn, possible_ending, found_money, hard);
 
     }
-    store_data(month_earn);
-
+    store_data(month_earn, total_dish);
+    whether_continue();
+	
     return 0;
 }
 
 /*functions for type*/
-void read_and_store_the_menu()
-{
+void read_and_store_the_menu(){
+    
     FILE *f_menu=fopen("menu.txt", "r");
     if (f_menu == NULL) {
 	    printf("Can't open %s\n", "menu.txt");
@@ -433,10 +441,10 @@ void calculate_money(struct node_ty* first, float* month_earn, int possible_endi
     //printf("after=%.2f", *month_earn);
 }
 
-void store_data(float month_earn)
+void store_data(float month_earn, int total_dish)
 {
     FILE* f_after_game=fopen("after_game.txt", "w");
-    fprintf(f_after_game, "%.2f", month_earn);
+    fprintf(f_after_game, "%.2f %d", month_earn, total_dish);
 
     fclose(f_after_game);
 }
@@ -478,13 +486,13 @@ void direction(char maze[ROWS][COLS], struct node *list, struct node *tail, int 
         //死路
         if(maze[list->x + 2][list->y] != '0' && maze[list->x - 2][list->y] != '0' && maze[list->x][list->y + 2] != '0' && maze[list->x][list->y - 2] != '0'){
             if(count == 1)//在第一個死路設置命運機會,可能是加錢、被狗追、直接到終點...
-                maze[list->x][list->y] = '$';
+                maze[list->x][list->y] = CHANCE;
             count++;
 
             list = list->prior;//若是死路的話，往前一格
             pop_back(tail);
 
-            if(list->x == 1 && list->y == 1)//如果回到原點，迷宮即生成
+            if(list->x == 1 && list->y == 1)//如果回到原點，迷宮即生成完畢
                 return;
 
             continue;
@@ -543,79 +551,79 @@ void player(char maze[ROWS][COLS], int *x, int *y, int *possible_ending, int *fo
         case 0xE0:
             switch(ch=getch()){
                 case 72: //上
-                    if(maze[*x-1][*y] == '#'){//若到達終點，遊戲結束
+                    if(maze[*x-1][*y] == DOOR){//若到達終點，遊戲結束
                         *possible_ending = 1;
                         *x -= 1;
                     }
-                    else if(maze[*x-1][*y] == '$'){//若遇到機會卡的話
+                    else if(maze[*x-1][*y] == CHANCE){//若遇到機會卡的話
                         chance_card(num, possible_ending, found_money);
-                        maze[*x][*y] = '.';
+                        maze[*x][*y] = SPACE;
                         *x -= 1;
-                        maze[*x][*y] = '*';
+                        maze[*x][*y] = PLAYER;
                     }
-                    else if(maze[*x-1][*y] == 'O')//如果是死路的話，地圖不變
+                    else if(maze[*x-1][*y] == WALL)//如果是死路的話，地圖不變
                         printf("This is a dead end!\n");
                     else{//往上走
-                        maze[*x][*y] = '.';
+                        maze[*x][*y] = SPACE;
                         *x -= 1;
-                        maze[*x][*y] = '*';
+                        maze[*x][*y] = PLAYER;
                     }
                     break;
                 case 80:  //下
-                    if(maze[*x+1][*y] == '#'){//若到達終點，遊戲結束
+                    if(maze[*x+1][*y] == DOOR){//若到達終點，遊戲結束
                         *possible_ending = 1;
                         *x += 1;
                     }
-                    else if(maze[*x+1][*y] == '$'){//若遇到機會卡的話
+                    else if(maze[*x+1][*y] == CHANCE){//若遇到機會卡的話
                         chance_card(num, possible_ending, found_money);
-                        maze[*x][*y] = '.';
+                        maze[*x][*y] = SPACE;
                         *x += 1;
-                        maze[*x][*y] = '*';
+                        maze[*x][*y] = PLAYER;
                     }
-                    else if(maze[*x+1][*y] == 'O')
+                    else if(maze[*x+1][*y] == WALL)
                         printf("This is a dead end!\n");
                     else{
-                        maze[*x][*y] = '.';
+                        maze[*x][*y] = SPACE;
                         *x += 1;
-                        maze[*x][*y] = '*';
+                        maze[*x][*y] = PLAYER;
                     }
                     break;
                 case 75:  //左
-                    if(maze[*x][*y-1] == '#'){//若到達終點，遊戲結束
+                    if(maze[*x][*y-1] == DOOR){//若到達終點，遊戲結束
                         *possible_ending = 1;
                         *y -= 1;
                     }
-                    else if(maze[*x][*y-1] == '$'){//若遇到機會卡的話
+                    else if(maze[*x][*y-1] == CHANCE){//若遇到機會卡的話
                         chance_card(num, possible_ending, found_money);
-                        maze[*x][*y] = '.';
+                        maze[*x][*y] = SPACE;
                         *y -= 1;
-                        maze[*x][*y] = '*';
+                        maze[*x][*y] = PLAYER;
                     }
-                    else if(maze[*x][*y-1] == 'O')
+                    else if(maze[*x][*y-1] == WALL)
                         printf("This is a dead end!\n");
                     else{
-                        maze[*x][*y] = '.';
+                        maze[*x][*y] = SPACE;
                         *y -= 1;
-                        maze[*x][*y] = '*';
+                        maze[*x][*y] = PLAYER;
                     }
                     break;
                 case 77:  //右
-                    if(maze[*x][*y+1] == '#'){//若到達終點，遊戲結束
+                    if(maze[*x][*y+1] == DOOR){//若到達終點，遊戲結束
                         *possible_ending = 1;
                         *y += 1;
                     }
-                    else if(maze[*x][*y+1] == '$'){//若遇到機會卡的話
+                    else if(maze[*x][*y+1] == CHANCE){//若遇到機會卡的話
                         chance_card(num, possible_ending, found_money);
-                        maze[*x][*y] = '.';
+                        maze[*x][*y] = SPACE;
                         *y += 1;
-                        maze[*x][*y] = '*';
+                        maze[*x][*y] = PLAYER;
                     }
-                    else if(maze[*x][*y+1] == 'O')
+                    else if(maze[*x][*y+1] == WALL)
                         printf("This is a dead end!\n");
                     else{
-                        maze[*x][*y] = '.';
+                        maze[*x][*y] = SPACE;
                         *y += 1;
-                        maze[*x][*y] = '*';
+                        maze[*x][*y] = PLAYER;
                     }
                     break;
             }
@@ -640,4 +648,31 @@ void countdown(int seconds) {//時間倒數
         seconds--;
     }
     exit(0);
+}
+
+void whether_continue()
+{
+    char choose[3];
+    //int choose;
+
+    while(1){
+        printf("Do you want to continue ????\n");
+        printf("Y/N:");
+        fgets(choose, 3, stdin);
+
+        choose[2]='\0';
+        choose[0]=tolower(choose[0]);
+
+        if(choose[0]=='y'){
+            system("start cmd.exe /K front.exe");
+            break;
+        }
+        else if(choose[0]=='n'){
+            system("start cmd.exe /K bigbigstage.exe");
+            break;
+        }
+        else{
+            printf("invalid input !!!!\n");
+        }
+    }
 }
