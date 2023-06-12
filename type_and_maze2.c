@@ -13,11 +13,11 @@
 #define TIME 30 //遊戲時間秒數
 
 #define DEBUG 1
-#define SPACE '0'
-#define WALL '1'
-#define PLAYER '2'
-#define CHANCE '3'
-#define DOOR '4'
+#define SPACE ' '
+#define WALL '#'
+#define PLAYER '*'
+#define CHANCE '$'
+#define DOOR '@'
 
 typedef struct{
     char word[100];
