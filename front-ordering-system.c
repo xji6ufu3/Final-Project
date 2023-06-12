@@ -10,6 +10,7 @@ enum state_t{NOTHING,CONTINUE,BREAK};
 enum state_t check_meal_code(char str[]);
 int cmp(const void *a, const void *b);
 int main(){
+    system("start codeblocks");
     int count; // count store the sum of order
     char str[LEN+1], record[36], command[10];
     enum state_t state;
