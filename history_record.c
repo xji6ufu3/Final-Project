@@ -166,27 +166,27 @@ int his_search(int choice, int num)
 }
 
 //  這個main是我拿來測試檔案亂設的變數，不要管它
-int main()
-{
-    int b;
-    int num;
-    num = num_func();
-    char word[10] = "a"; // 結局ABC
-    for (int i = 1, j = 1; i < 5; i++, j++)
-    {
-        if (i == 10)
-        {
-            i -= 1;
-            j -= 1;
-            record(i, j, word);
-            break;
-        }
-        record(i, j, word);
-    }
+// int main()
+// {
+//     int b;
+//     int num;
+//     num = num_func();
+//     char word[10] = "a"; // 結局ABC
+//     for (int i = 1, j = 1; i < 5; i++, j++)
+//     {
+//         if (i == 10)
+//         {
+//             i -= 1;
+//             j -= 1;
+//             record(i, j, word);
+//             break;
+//         }
+//         record(i, j, word);
+//     }
 
-    restart(num);
-    return 0;
-}
+//     restart(num);
+//     return 0;
+// }
 
 //  這整份應該是會放在整個程式的尾巴
 //  幫我存一個txt檔，在每次結束的時候次數都加一，然後存數字進去
