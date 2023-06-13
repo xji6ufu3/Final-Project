@@ -423,7 +423,7 @@ void calculate_money(struct node_ty* first, float* month_earn, int possible_endi
         money+=temp->price;
         //printf("%.2f ", money);
         first=temp->next;
-        free(temp);
+        // free(temp);
     }
     //printf("\nbefore=%.2f\n", month_earn);
 
