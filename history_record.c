@@ -123,12 +123,12 @@ int restart(int num)
 }
 
 //  用來儲存讀取歷史紀錄的變數，可能要另外放在主程式裡?
-typedef struct
-{
-    int earn;
-    int dishes;
-    int choice;
-} values;
+//typedef struct
+//{
+//    int earn;
+//    int dishes;
+//    int choice;
+//} values;
 
 // 讀取歷史紀錄  然後回傳earn跟dishes
 int his_search(int choice, int num)
