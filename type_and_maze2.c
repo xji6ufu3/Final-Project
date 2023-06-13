@@ -415,14 +415,14 @@ void calculate_money(struct node_ty* first, float* month_earn, int possible_endi
 {
     //先把總金額結算好
     float money=0;
-    struct node_ty* temp;
+    //struct node_ty* temp;
     while(first!=NULL){
-        temp=first;
+        //temp=first;
         //printf("%d", first->menu_code);
         //fprintf(f_cook, "%d", first->menu_code);
-        money+=temp->price;
+        money+=first->price;
         //printf("%.2f ", money);
-        first=temp->next;
+        first=first->next;
         // free(temp);
     }
     //printf("\nbefore=%.2f\n", month_earn);
